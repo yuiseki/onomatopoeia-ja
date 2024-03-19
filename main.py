@@ -88,6 +88,36 @@ for i in range(len(surasura['train'])):
 # convert to dataset
 onomatopoeia_dataset = datasets.Dataset.from_list(onomatopoeia_list)
 
-print(onomatopoeia_dataset)
+# print(onomatopoeia_dataset)
 
-onomatopoeia_dataset.push_to_hub("yuiseki/onomatopoeia-ja")
+# onomatopoeia_dataset.push_to_hub("yuiseki/onomatopoeia-ja")
+
+text_to_onomatopoeia_list = []
+for i in range(len(onomatopoeia_list)):
+    onomatopoeia = onomatopoeia_list[i]
+    onomatopoeia_ja = onomatopoeia['onomatopoeia_ja']
+    if not "details_ja" in onomatopoeia:
+        continue
+    for detail in onomatopoeia['details_ja']:
+        new_onomatopoeia = {
+            "text": detail,
+            "text_lang": "ja",
+            "onomatopoeia_ja": onomatopoeia_ja,
+        }
+        text_to_onomatopoeia_list.append(new_onomatopoeia)
+    if not "details_en" in onomatopoeia:
+        continue
+    for detail in onomatopoeia['details_en']:
+        if detail == "manga sound effects":
+            continue
+        new_onomatopoeia = {
+            "text": detail,
+            "text_lang": "en",
+            "onomatopoeia_ja": onomatopoeia_ja,
+        }
+        text_to_onomatopoeia_list.append(new_onomatopoeia)
+
+
+
+text_to_onomatopoeia_dataset = datasets.Dataset.from_list(text_to_onomatopoeia_list)
+text_to_onomatopoeia_dataset.push_to_hub("yuiseki/onomatopoeia-ja-flat")
